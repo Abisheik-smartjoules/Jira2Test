@@ -1,0 +1,36 @@
+{
+  "name": "jira2test",
+  "version": "1.0.0",
+  "description": "Jira2Test - A full-stack TypeScript web application that generates domain-aware Gherkin feature files from Jira user stories",
+  "private": true,
+  "workspaces": [
+    "packages/shared",
+    "packages/frontend",
+    "packages/backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "npm run dev --workspace=packages/frontend",
+    "dev:backend": "npm run dev --workspace=packages/backend",
+    "dev:shared": "npm run dev --workspace=packages/shared",
+    "build": "npm run build --workspaces",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "build:frontend": "npm run build --workspace=packages/frontend",
+    "build:backend": "npm run build --workspace=packages/backend",
+    "test": "npm run test --workspaces",
+    "test:frontend": "npm run test --workspace=packages/frontend",
+    "test:backend": "npm run test --workspace=packages/backend",
+    "lint": "npm run lint --workspaces",
+    "format": "npm run format --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "author": "QA Team",
+  "license": "MIT"
+}
