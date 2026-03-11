@@ -28,7 +28,7 @@ export class GherkinGeneratorService {
     this.config = {
       model: 'llama-3.3-70b-versatile', // Default Groq model
       temperature: 0.3,
-      maxTokens: 2000,
+      maxTokens: 8000, // Increased for comprehensive scenario generation
       ...config,
     };
     

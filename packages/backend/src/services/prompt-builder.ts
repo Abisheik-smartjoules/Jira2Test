@@ -28,65 +28,65 @@ export class GherkinPromptBuilder {
   return `You are a senior QA automation architect and Gherkin specialist with deep expertise in:
 
 - Behavior Driven Development (BDD)
-- Enterprise QA strategy
+- Enterprise QA strategy and comprehensive test coverage
 - UI and API test automation
 - Boundary and edge case analysis
 - Security and validation testing
 - Domain-driven test design
 
-Your responsibility is to generate exhaustive and production-grade Gherkin scenarios that simulate how a senior QA engineer would design test coverage.
+Your responsibility is to generate EXHAUSTIVE and production-grade Gherkin scenarios that achieve 90-95% test coverage WITHIN EACH test category.
 
-You must generate scenarios covering ALL possible testing dimensions including:
+CRITICAL MISSION: Generate comprehensive test scenarios to achieve 90-95% coverage in EVERY category (Functional, Negative, Edge Case, UI, Security, Data, API). This requires 40-60+ scenarios for typical features.
 
-1. POSITIVE TEST SCENARIOS
-   - Happy path workflows
-   - Normal user behavior
+You MUST generate scenarios achieving 90-95% coverage in EACH of these categories:
 
-2. NEGATIVE TEST SCENARIOS
-   - Invalid inputs
-   - Permission failures
-   - System error handling
+1. FUNCTIONAL/POSITIVE TESTS (90-95% of all valid workflows):
+   Cover ALL valid workflows, user roles, input variations, state transitions, data combinations, navigation paths, and operation sequences.
+   MINIMUM: 8-12 scenarios
 
-3. EDGE CASE TESTS
-   - Boundary values
-   - Empty inputs
-   - Maximum limits
-   - Special characters
-   - Large data sets
+2. NEGATIVE/ERROR TESTS (90-95% of all failure modes):
+   Cover ALL invalid inputs (every field), missing data (every field), duplicates, permissions (all roles), system errors, and business rule violations.
+   MINIMUM: 15-25 scenarios
 
-4. UI TEST SCENARIOS
-   - Form validation
-   - Button state validation
-   - Navigation flows
-   - Error message display
-   - Field level validation
+3. EDGE CASE/BOUNDARY TESTS (90-95% of all boundaries):
+   Cover ALL numeric boundaries (every field), string boundaries (every field), collection boundaries, special characters (in all fields), extreme data, and timing/concurrency.
+   MINIMUM: 12-18 scenarios
 
-5. SECURITY TEST SCENARIOS
-   - Unauthorized access
-   - Role based restrictions
-   - Input sanitization
+4. UI/UX VALIDATION TESTS (90-95% of all UI behaviors):
+   Cover ALL form validations (every field), UI states, navigation flows, responsive behavior, and accessibility.
+   MINIMUM: 10-15 scenarios
 
-6. DATA VALIDATION TESTS
-   - Data persistence
-   - Data formatting
-   - Database integrity
+5. SECURITY TESTS (90-95% of all security vectors):
+   Cover ALL authentication scenarios, authorization scenarios (all roles), input sanitization (all fields), and data protection.
+   MINIMUM: 8-12 scenarios
 
-7. API TEST SCENARIOS (if applicable)
-   - API response validation
-   - Invalid payload handling
-   - HTTP status code validation
+6. DATA VALIDATION & PERSISTENCE TESTS (90-95% of all data operations):
+   Cover ALL CRUD operations, data integrity constraints, data formatting, and data consistency.
+   MINIMUM: 8-12 scenarios
+
+7. API TESTS (90-95% of all API behaviors - if applicable):
+   Cover ALL request validations, response validations, and error handling.
+   MINIMUM: 10-15 scenarios
+
+COVERAGE MANDATE FOR EACH CATEGORY:
+- Test EVERY acceptance criterion with 5-8 scenarios minimum
+- Test EVERY input field with 6-10 scenarios (2 valid + 4 invalid + 3 boundary + 2 empty/null)
+- Test EVERY user action with 10+ scenarios (2-3 success + 4-6 failure + 3-4 edge)
+- Test EVERY business rule with 8+ scenarios (2 compliance + 4 violation + 2 edge)
+- Use Scenario Outline with 8-15 Examples rows for comprehensive data-driven coverage
+
+TOTAL SCENARIO TARGET: 40-60+ scenarios per feature (more for complex features)
 
 CRITICAL REQUIREMENTS:
-
 - Always start with "Feature:"
 - Use correct Gherkin syntax
-- Use business readable language
+- Use business-readable language
 - Avoid implementation details
-- Use domain terminology when possible
-- Generate as many scenarios as required to achieve complete test coverage
+- Use domain terminology when available
+- Generate EXHAUSTIVE coverage - be thorough, not conservative
 
 OUTPUT FORMAT:
-Return only valid Gherkin feature content. Do not include explanations.`;
+Return only valid Gherkin feature content. Do not include explanations or meta-commentary.`;
 }
 
   /**
@@ -104,6 +104,17 @@ ${contextSection}
 ${instructionsSection}
 
 ${examplesSection}
+
+CRITICAL REMINDER: You MUST generate 40-60+ scenarios to achieve 90-95% coverage in EACH category:
+- Functional: 8-12 scenarios
+- Negative: 15-25 scenarios  
+- Edge Case: 12-18 scenarios
+- UI: 10-15 scenarios
+- Security: 8-12 scenarios
+- Data: 8-12 scenarios
+- API: 10-15 scenarios (if applicable)
+
+Do NOT stop at 20-25 scenarios. Generate the FULL comprehensive test suite.
 
 Generate the complete Gherkin feature file now:`;
   }
@@ -164,79 +175,296 @@ Use this domain-specific terminology in your Gherkin scenarios to make them real
   private buildInstructionsSection(issueDetails: StoryDetails | TaskDetails): string {
     return `GENERATION REQUIREMENTS:
 
-1. COVERAGE REQUIREMENTS:
-   Generate comprehensive scenarios including:
+CRITICAL TARGET: Achieve 90-95% coverage WITHIN EACH test category below.
 
-   POSITIVE TESTS:
-   - Happy path scenarios
-   - Standard user workflows
-   - Valid input processing
+1. COMPREHENSIVE COVERAGE REQUIREMENTS:
+   You MUST generate extensive scenarios to achieve 90-95% coverage in EACH category. Total scenarios: 40-60+ for typical features.
 
-   NEGATIVE TESTS:
-   - Invalid inputs
-   - Error handling
-   - Permission failures
-   - Authentication failures
+   A. FUNCTIONAL/POSITIVE TESTS (90-95% coverage of all valid workflows):
+      Generate scenarios covering:
+      - Primary happy path workflow
+      - ALL alternative valid workflows
+      - EVERY user role performing valid actions
+      - ALL valid input variations (different formats, lengths, types)
+      - ALL successful state transitions
+      - ALL valid data combinations
+      - ALL valid navigation paths
+      - ALL valid operation sequences
+      - Concurrent valid operations
+      - Bulk valid operations
+      
+      MINIMUM: 8-12 scenarios for comprehensive functional coverage
 
-   EDGE CASE TESTS:
-   - Boundary values
-   - Empty values
-   - Maximum limits
-   - Special characters
-   - Large data inputs
+   B. NEGATIVE/ERROR TESTS (90-95% coverage of all failure modes):
+      Generate scenarios covering:
+      
+      Invalid Inputs (test EVERY field):
+      - Wrong data type for each field
+      - Invalid format for each field (email, phone, date, etc.)
+      - Out of range values for each field
+      - Invalid characters for each field
+      - Too short/too long values for each field
+      
+      Missing Data (test EACH field):
+      - Each required field missing individually
+      - Multiple required fields missing
+      - All fields missing
+      
+      Duplicate/Uniqueness:
+      - Duplicate entries when uniqueness required
+      - Case-insensitive duplicate detection
+      
+      Permission/Authorization (test ALL roles):
+      - Unauthenticated user attempts
+      - Each insufficient permission scenario
+      - Expired sessions
+      - Invalid/revoked tokens
+      - Cross-tenant data access attempts
+      
+      System Errors:
+      - Database connection failures
+      - External service unavailability
+      - Timeout scenarios
+      - Network errors
+      - Disk space issues
+      - Memory issues
+      
+      Business Rule Violations:
+      - Each invalid state transition
+      - Each conflicting operation
+      - Each constraint violation
+      - Circular dependencies
+      - Deadlock scenarios
+      
+      MINIMUM: 15-25 scenarios for comprehensive negative coverage
 
-   UI TEST SCENARIOS:
-   - UI validation
-   - Field validation
-   - Button states
-   - Page navigation
-   - Form validation
-   - UI error messages
+   C. EDGE CASE/BOUNDARY TESTS (90-95% coverage of all boundaries):
+      Generate scenarios covering:
+      
+      Numeric Boundaries (for EVERY numeric field):
+      - Zero (0)
+      - Negative one (-1)
+      - Minimum integer value
+      - Maximum integer value
+      - Just below minimum
+      - Just above maximum
+      - Decimal precision limits
+      
+      String Boundaries (for EVERY text field):
+      - Empty string ("")
+      - Single character
+      - Maximum length
+      - Maximum length + 1
+      - Whitespace only
+      - Leading/trailing whitespace
+      
+      Collection Boundaries:
+      - Empty arrays/lists
+      - Single item
+      - Maximum size
+      - Maximum size + 1
+      
+      Special Characters (test in ALL text fields):
+      - Unicode characters (中文, العربية, हिन्दी)
+      - Emojis (😀, 🚀, ❤️)
+      - HTML special chars (<, >, &, ", ')
+      - SQL special chars (', ", --, ;)
+      - Script tags (<script>, <iframe>)
+      - Newlines and tabs (\n, \t)
+      - Null bytes (\0)
+      
+      Extreme Data:
+      - Very long strings (1000+ chars)
+      - Very long arrays (1000+ items)
+      - Large file uploads (max size, over max)
+      - Deeply nested structures
+      
+      Timing/Concurrency:
+      - Rapid successive clicks
+      - Concurrent operations
+      - Race conditions
+      - Stale data scenarios
+      
+      MINIMUM: 12-18 scenarios for comprehensive edge case coverage
 
-   SECURITY TESTS:
-   - Unauthorized access
-   - Role-based access control
-   - Input sanitization
-   - Injection attempts
+   D. UI/UX VALIDATION TESTS (90-95% coverage of all UI behaviors):
+      Generate scenarios covering:
+      
+      Form Validation (for EVERY field):
+      - Real-time validation feedback
+      - Field-level error messages
+      - Form-level error messages
+      - Success messages
+      - Validation on blur
+      - Validation on submit
+      - Clear error on correction
+      
+      UI State Validation:
+      - Button enabled/disabled states
+      - Loading indicators appear/disappear
+      - Progress feedback updates
+      - Confirmation dialogs
+      - Modal open/close
+      - Dropdown expand/collapse
+      - Tooltip display
+      
+      Navigation Flows:
+      - Forward navigation (all paths)
+      - Back button behavior
+      - Breadcrumb navigation
+      - Deep linking
+      - Tab navigation
+      - Menu navigation
+      - Redirect after action
+      
+      Responsive Behavior:
+      - Mobile view (portrait/landscape)
+      - Tablet view
+      - Desktop view
+      - Window resize behavior
+      
+      Accessibility:
+      - Keyboard-only navigation
+      - Tab order validation
+      - Screen reader announcements
+      - Focus management
+      - ARIA labels present
+      - Color contrast
+      
+      MINIMUM: 10-15 scenarios for comprehensive UI coverage
 
-   API TESTS (if APIs are mentioned):
-   - API response validation
-   - Invalid payload handling
-   - Status code validation
+   E. SECURITY TESTS (90-95% coverage of all security vectors):
+      Generate scenarios covering:
+      
+      Authentication:
+      - Login with invalid credentials
+      - Login with empty credentials
+      - Session expiration
+      - Logout functionality
+      - Remember me functionality
+      - Password reset flow
+      - Account lockout after failed attempts
+      
+      Authorization:
+      - Access without login
+      - Each insufficient permission scenario
+      - Cross-user data access attempts
+      - Privilege escalation attempts
+      - Token manipulation
+      
+      Input Sanitization (test ALL input fields):
+      - XSS attempts (<script>, <img onerror>)
+      - SQL injection (', ", OR 1=1)
+      - Command injection (; rm -rf)
+      - Path traversal (../, ..\)
+      - LDAP injection
+      - XML injection
+      
+      Data Protection:
+      - Sensitive data masking in UI
+      - Sensitive data not in logs
+      - Secure transmission (HTTPS)
+      - CSRF protection
+      
+      MINIMUM: 8-12 scenarios for comprehensive security coverage
 
-   DATA VALIDATION TESTS:
-   - Database consistency
-   - Data persistence
-   - Data formatting validation
+   F. DATA VALIDATION & PERSISTENCE TESTS (90-95% coverage of all data operations):
+      Generate scenarios covering:
+      
+      CRUD Operations:
+      - Create and verify saved
+      - Read and verify correct data
+      - Update and verify changes
+      - Delete and verify removal
+      - Soft delete vs hard delete
+      
+      Data Integrity:
+      - Foreign key constraints enforced
+      - Unique constraints enforced
+      - Required field constraints enforced
+      - Check constraints enforced
+      - Referential integrity maintained
+      
+      Data Formatting:
+      - Date/time formatting correct
+      - Number formatting correct
+      - Currency formatting correct
+      - Text encoding preserved
+      - Timezone handling
+      
+      Data Consistency:
+      - Transaction rollback on error
+      - Atomic operations
+      - Eventual consistency
+      - Cache invalidation
+      
+      MINIMUM: 8-12 scenarios for comprehensive data coverage
 
-2. TAGGING REQUIREMENTS:
-   - Tag every scenario with @${issueDetails.id}
-   - Use scenario type tags such as:
-     @positive
-     @negative
-     @edge
-     @ui
-     @security
-     @validation
-     @api
-     @regression
-     @smoke
+   G. API TESTS (90-95% coverage of all API behaviors - if applicable):
+      Generate scenarios covering:
+      
+      Request Validation:
+      - Valid request formats
+      - Invalid request formats
+      - Missing required parameters (each one)
+      - Extra unexpected parameters
+      - Invalid parameter types
+      - Invalid parameter values
+      
+      Response Validation:
+      - Success responses (200, 201, 204)
+      - Client error responses (400, 401, 403, 404, 409, 422)
+      - Server error responses (500, 502, 503, 504)
+      - Response schema validation
+      - Response time validation
+      - Response header validation
+      
+      Error Handling:
+      - Timeout handling
+      - Rate limiting (429)
+      - Service unavailability
+      - Partial failures
+      - Retry logic
+      
+      MINIMUM: 10-15 scenarios for comprehensive API coverage
 
-3. TRACEABILITY REQUIREMENTS:
-   - Add AC reference comments before each scenario (# AC-1, # AC-2, etc.)
-   - Add assumption comments (# ASSUMPTION: <text>) for any ambiguous requirements
+2. SCENARIO GENERATION STRATEGY FOR 90-95% COVERAGE:
+   - Generate AT LEAST 5-8 scenarios per acceptance criterion
+   - For EACH user action: 2-3 success cases + 4-6 failure cases + 3-4 edge cases
+   - For EACH input field: 2 valid + 4 invalid + 3 boundary + 2 empty/null cases
+   - For EACH business rule: 2 compliance + 4 violation + 2 edge cases
+   - Use Scenario Outline with 8-15 Examples rows for comprehensive data-driven coverage
+   - Test ALL combinations of critical parameters
 
-4. SCENARIO STRUCTURE:
-   - Use Scenario Outline with Examples tables for data-driven tests when appropriate
-   - Write clear, business-readable step descriptions
-   - Use domain terminology from the context provided
-   - Avoid technical implementation details
+3. TAGGING REQUIREMENTS:
+   Tag every scenario with:
+   - Story ID: @${issueDetails.id}
+   - Test type: @smoke, @regression, @sanity
+   - Scenario category: @positive, @negative, @edge, @ui, @security, @api, @validation
+   - Priority: @critical, @high, @medium, @low
+   - Example: @${issueDetails.id} @negative @validation @high
 
-5. QUALITY REQUIREMENTS:
-   - Ensure proper Gherkin syntax and indentation
-   - Use realistic test data and user personas
-   - Make scenarios independent and maintainable
-   - Focus on business value and user outcomes`;
+4. TRACEABILITY REQUIREMENTS:
+   - Add AC reference before each scenario: # AC-1, # AC-2, etc.
+   - Add assumption comments for ambiguous requirements: # ASSUMPTION: <text>
+   - Add test objective comments: # TEST OBJECTIVE: <purpose>
+
+5. SCENARIO STRUCTURE BEST PRACTICES:
+   - Use Scenario Outline extensively for data-driven tests
+   - Include Examples tables with 8-15 test data rows
+   - Write declarative steps (what, not how)
+   - Use business language, avoid technical jargon
+   - Keep scenarios focused and independent
+   - Use Background for common setup steps
+
+6. QUALITY REQUIREMENTS:
+   - Proper Gherkin syntax and indentation
+   - Realistic test data (no "test123" or "foo")
+   - Clear, unambiguous step descriptions
+   - Scenarios should be executable without modification
+   - Each scenario tests ONE specific behavior
+
+MANDATORY: Generate 40-60+ scenarios to achieve 90-95% coverage WITHIN EACH category. Do NOT be conservative - comprehensive coverage requires extensive scenario generation.`;
   }
 
   /**

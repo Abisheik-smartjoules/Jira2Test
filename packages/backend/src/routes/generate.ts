@@ -57,12 +57,6 @@ router.post('/', async (req: Request, res: Response) => {
       model: env.OPENAI_MODEL,
     });
 
-    const sheetsService = new GoogleSheetsService({
-      spreadsheetId: env.GOOGLE_SHEETS_SPREADSHEET_ID,
-      sheetName: env.GOOGLE_SHEETS_SHEET_NAME,
-      serviceAccountKey: env.GOOGLE_SERVICE_ACCOUNT_KEY
-    });
-
     // Step 1: Fetch issue details from Jira
     logger.info(`Fetching ${issueType} details for ${issueId}`);
     const issueDetails = issueType === 'story' 
@@ -77,9 +71,19 @@ router.post('/', async (req: Request, res: Response) => {
     logger.info(`Generating Gherkin scenarios for ${issueId}`);
     const featureFile = await gherkinService.generateFeatureFile(issueDetails, context);
 
-    // Step 4: Sync scenarios to Google Sheets
-    logger.info(`Syncing scenarios to Google Sheets for ${issueId}`);
-    const syncResults = await sheetsService.syncScenarios(featureFile.scenarios, issueId, issueDetails.title);
+    // Step 4: Sync scenarios to Google Sheets (optional)
+    let syncResults = { rowsAdded: 0, rowsSkipped: 0, scenarios: [] };
+    try {
+      const sheetsService = new GoogleSheetsService({
+        spreadsheetId: env.GOOGLE_SHEETS_SPREADSHEET_ID,
+        sheetName: env.GOOGLE_SHEETS_SHEET_NAME,
+        serviceAccountKey: env.GOOGLE_SERVICE_ACCOUNT_KEY
+      });
+      logger.info(`Syncing scenarios to Google Sheets for ${issueId}`);
+      syncResults = await sheetsService.syncScenarios(featureFile.scenarios, issueId, issueDetails.title);
+    } catch (sheetsError) {
+      logger.warn(`Google Sheets sync skipped: ${sheetsError instanceof Error ? sheetsError.message : 'Unknown error'}`);
+    }
 
     // Step 5: Store feature file for download
     storeFeatureFile(issueId, featureFile);
