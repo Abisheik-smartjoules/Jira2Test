@@ -96,4 +96,63 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * GET /api/stories/statuses - Fetch all possible statuses from Jira board configuration
+ */
+router.get('/statuses', async (req: Request, res: Response) => {
+  try {
+    // Get environment configuration
+    const env = getEnvironment();
+    
+    // Initialize Jira service with proper configuration
+    const jiraService = new JiraService({
+      baseUrl: env.JIRA_BASE_URL,
+      username: env.JIRA_USERNAME,
+      apiToken: env.JIRA_API_TOKEN,
+      boardId: env.JIRA_BOARD_ID
+    });
+    
+    // Fetch board statuses
+    const statuses = await jiraService.getBoardStatuses();
+
+    logger.info(`Fetched ${statuses.length} statuses from Jira board configuration`, {
+      statuses
+    });
+
+    res.json({
+      success: true,
+      data: { statuses }
+    });
+
+  } catch (error) {
+    logger.error('Failed to fetch board statuses:', error);
+
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.name === 'AuthenticationError') {
+        return res.status(401).json({
+          success: false,
+          error: 'Authentication failed',
+          message: 'Please check your Jira credentials'
+        });
+      }
+      
+      if (error.message.includes('network') || error.message.includes('connection')) {
+        return res.status(500).json({
+          success: false,
+          error: 'Unable to connect to Jira',
+          message: 'Failed to fetch board statuses from Jira'
+        });
+      }
+    }
+
+    // Generic error response
+    res.status(500).json({
+      success: false,
+      error: 'Unable to connect to Jira',
+      message: 'Failed to fetch board statuses from Jira'
+    });
+  }
+});
+
 export { router as storiesRouter };

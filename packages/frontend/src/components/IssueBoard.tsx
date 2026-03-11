@@ -12,19 +12,29 @@ interface IssueBoardProps {
   selectedIssueId?: string;
 }
 
-const statusIcons = {
+const statusIcons: Record<string, any> = {
   'To Do': Circle,
   'In Progress': Clock,
+  'On Hold': AlertCircle,
+  'Peer Review': AlertCircle,
   'Ready for QA': AlertCircle,
+  'QA': AlertCircle,
   'Done': CheckCircle,
 };
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   'To Do': 'text-gray-500',
   'In Progress': 'text-blue-500',
+  'On Hold': 'text-orange-500',
+  'Peer Review': 'text-purple-500',
   'Ready for QA': 'text-yellow-500',
+  'QA': 'text-yellow-500',
   'Done': 'text-green-500',
 };
+
+// Fallback icon and color for unknown statuses
+const getStatusIcon = (status: string) => statusIcons[status] || Circle;
+const getStatusColor = (status: string) => statusColors[status] || 'text-gray-500';
 
 export function IssueBoard({
   issues,
@@ -36,7 +46,37 @@ export function IssueBoard({
   selectedIssueId,
 }: IssueBoardProps): JSX.Element {
   const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
+  const [boardStatuses, setBoardStatuses] = useState<string[]>([]);
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(true);
   const assigneeDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch board statuses from Jira board configuration
+  useEffect(() => {
+    const fetchBoardStatuses = async () => {
+      try {
+        setIsLoadingStatuses(true);
+        const response = await fetch('/api/stories/statuses');
+        const data = await response.json();
+        
+        if (data.success && data.data?.statuses) {
+          setBoardStatuses(data.data.statuses);
+        } else {
+          // Fallback to extracting statuses from issues if API fails
+          const uniqueStatuses = Array.from(new Set(issues.map(issue => issue.status))).sort();
+          setBoardStatuses(uniqueStatuses);
+        }
+      } catch (error) {
+        console.error('Failed to fetch board statuses:', error);
+        // Fallback to extracting statuses from issues
+        const uniqueStatuses = Array.from(new Set(issues.map(issue => issue.status))).sort();
+        setBoardStatuses(uniqueStatuses);
+      } finally {
+        setIsLoadingStatuses(false);
+      }
+    };
+
+    fetchBoardStatuses();
+  }, [issues]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -72,6 +112,9 @@ export function IssueBoard({
 
   // Get unique assignees for the dropdown
   const uniqueAssignees = Array.from(new Set(issues.map(issue => issue.assignee))).sort();
+  
+  // Use board statuses from Jira board configuration (not just from fetched issues)
+  const statusOptions = boardStatuses.length > 0 ? boardStatuses : Array.from(new Set(issues.map(issue => issue.status))).sort();
 
   const handleFilterChange = (newFilters: Partial<IssueFilters>) => {
     onFilterChange({ ...filters, ...newFilters });
@@ -195,13 +238,16 @@ export function IssueBoard({
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <select
               value={filters.status}
-              onChange={(e) => handleFilterChange({ status: e.target.value as IssueFilters['status'] })}
+              onChange={(e) => handleFilterChange({ status: e.target.value })}
               className="input-field pl-10 pr-8 py-2.5 appearance-none cursor-pointer"
+              disabled={isLoadingStatuses}
             >
               <option value="All">All Status</option>
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Ready for QA">Ready for QA</option>
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -217,7 +263,8 @@ export function IssueBoard({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredIssues.map((issue) => {
-            const StatusIcon = statusIcons[issue.status];
+            const StatusIcon = getStatusIcon(issue.status);
+            const statusColor = getStatusColor(issue.status);
             const isSelected = selectedIssueId === issue.id;
             
             return (
@@ -236,8 +283,8 @@ export function IssueBoard({
                     {issue.id}
                   </span>
                   <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-gray-50">
-                    <StatusIcon className={`h-4 w-4 ${statusColors[issue.status]}`} />
-                    <span className={`text-xs font-medium ${statusColors[issue.status]}`}>
+                    <StatusIcon className={`h-4 w-4 ${statusColor}`} />
+                    <span className={`text-xs font-medium ${statusColor}`}>
                       {issue.status}
                     </span>
                   </div>

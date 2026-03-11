@@ -260,24 +260,12 @@ export class JiraService {
   }
 
   /**
-   * Map Jira status names to our standardized status enum
+   * Map Jira status names - pass through actual status names from Jira
    */
-  private mapJiraStatusToOurStatus(jiraStatus: string): JiraStory['status'] {
-    const statusMap: Record<string, JiraStory['status']> = {
-      'To Do': 'To Do',
-      'In Progress': 'In Progress',
-      'Ready for QA': 'Ready for QA',
-      'Done': 'Done',
-      // Common variations
-      'TODO': 'To Do',
-      'OPEN': 'To Do',
-      'IN PROGRESS': 'In Progress',
-      'READY FOR QA': 'Ready for QA',
-      'CLOSED': 'Done',
-      'RESOLVED': 'Done',
-    };
-
-    return statusMap[jiraStatus.toUpperCase()] || 'To Do';
+  private mapJiraStatusToOurStatus(jiraStatus: string): string {
+    // Return the actual Jira status name without mapping
+    // This allows the frontend to display and filter by actual Jira board statuses
+    return jiraStatus;
   }
 
   /**
@@ -324,6 +312,29 @@ export class JiraService {
       }
     }
     return String(error);
+  }
+
+  /**
+   * Fetch all possible statuses from the Jira board configuration
+   */
+  async getBoardStatuses(): Promise<string[]> {
+    try {
+      // Fetch board configuration to get all columns (statuses)
+      const response = await this.client.get(`/rest/agile/1.0/board/${this.config.boardId}/configuration`);
+      
+      // Extract column names (statuses) from the board configuration
+      const columns = response.data?.columnConfig?.columns || [];
+      const statuses = columns
+        .map((column: any) => column.name)
+        .filter((name: string) => name && name.trim().length > 0);
+      
+      return statuses;
+    } catch (error) {
+      if (this.isRateLimitError(error)) {
+        return this.handleRateLimit(error, () => this.getBoardStatuses());
+      }
+      throw new Error(`Failed to fetch board statuses: ${this.getErrorMessage(error)}`);
+    }
   }
 
   /**

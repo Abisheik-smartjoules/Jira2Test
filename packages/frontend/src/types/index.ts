@@ -4,7 +4,7 @@ export type IssueType = 'story' | 'task';
 export interface JiraIssue {
   id: string;
   title: string;
-  status: 'To Do' | 'In Progress' | 'Ready for QA' | 'Done';
+  status: string; // Changed to string to support all Jira statuses
   assignee: string;
   description?: string;
   issueType: IssueType;
@@ -83,9 +83,9 @@ export interface ScenarioSummary {
 
 // UI state types
 export interface IssueFilters {
-  status: 'All' | 'To Do' | 'In Progress' | 'Ready for QA';
+  status: string; // Changed to string to support dynamic statuses from Jira
   search: string;
-  assignees: string[]; // Changed to array for multi-select
+  assignees: string[];
 }
 
 // Backward compatibility alias

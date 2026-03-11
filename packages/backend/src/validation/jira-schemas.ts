@@ -6,14 +6,14 @@ import { z } from 'zod';
 import { commonSchemas } from './validation-utils.js';
 
 /**
- * Jira story status enum
+ * Jira story status schema - accepts any string to support all Jira board statuses
  */
-export const jiraStoryStatusSchema = z.enum(['To Do', 'In Progress', 'Ready for QA', 'Done']);
+export const jiraStoryStatusSchema = z.string();
 
 /**
- * Jira task status enum (same as story status)
+ * Jira task status schema - accepts any string to support all Jira board statuses
  */
-export const jiraTaskStatusSchema = z.enum(['To Do', 'In Progress', 'Ready for QA', 'Done']);
+export const jiraTaskStatusSchema = z.string();
 
 /**
  * Jira story schema
@@ -69,7 +69,7 @@ export const taskDetailsSchema = z.object({
  * Story filters schema
  */
 export const storyFiltersSchema = z.object({
-  status: jiraStoryStatusSchema.or(z.literal('All')).optional(),
+  status: z.string().optional(),
   search: z.string().optional(),
 });
 
@@ -77,7 +77,7 @@ export const storyFiltersSchema = z.object({
  * Task filters schema (same as story filters)
  */
 export const taskFiltersSchema = z.object({
-  status: jiraTaskStatusSchema.or(z.literal('All')).optional(),
+  status: z.string().optional(),
   search: z.string().optional(),
 });
 
@@ -85,7 +85,7 @@ export const taskFiltersSchema = z.object({
  * Generic issue filters schema
  */
 export const issueFiltersSchema = z.object({
-  status: z.enum(['To Do', 'In Progress', 'Ready for QA', 'Done']).or(z.literal('All')).optional(),
+  status: z.string().optional(),
   search: z.string().optional(),
 });
 
