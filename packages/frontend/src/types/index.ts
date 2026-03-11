@@ -85,6 +85,7 @@ export interface ScenarioSummary {
 export interface IssueFilters {
   status: 'All' | 'To Do' | 'In Progress' | 'Ready for QA';
   search: string;
+  assignees: string[]; // Changed to array for multi-select
 }
 
 // Backward compatibility alias

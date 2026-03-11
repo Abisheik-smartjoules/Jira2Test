@@ -20,6 +20,7 @@ export function HomePage(): JSX.Element {
   const [filters, setFilters] = useState<IssueFilters>({
     status: 'All',
     search: '',
+    assignees: [],
   });
   
   const [generationResult, setGenerationResult] = useState<GenerateResponse | null>(null);

@@ -1,4 +1,5 @@
-import { Search, Filter, User, CheckCircle, Clock, AlertCircle, Circle } from 'lucide-react';
+import { Search, Filter, User, CheckCircle, Clock, AlertCircle, Circle, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import type { JiraIssue, IssueFilters, IssueType } from '../types';
 
 interface IssueBoardProps {
@@ -34,18 +35,58 @@ export function IssueBoard({
   isLoading,
   selectedIssueId,
 }: IssueBoardProps): JSX.Element {
+  const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
+  const assigneeDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (assigneeDropdownRef.current && !assigneeDropdownRef.current.contains(event.target as Node)) {
+        setIsAssigneeDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const filteredIssues = issues.filter((issue) => {
     const matchesStatus = filters.status === 'All' || issue.status === filters.status;
+    
+    // Enhanced search: search across ID, title, description, and assignee
+    const searchLower = filters.search.toLowerCase();
     const matchesSearch = 
       filters.search === '' ||
-      issue.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      issue.id.toLowerCase().includes(filters.search.toLowerCase());
+      issue.id.toLowerCase().includes(searchLower) ||
+      issue.title.toLowerCase().includes(searchLower) ||
+      issue.assignee.toLowerCase().includes(searchLower) ||
+      (issue.description && issue.description.toLowerCase().includes(searchLower));
     
-    return matchesStatus && matchesSearch;
+    // Multi-select assignee filter
+    const matchesAssignees = 
+      filters.assignees.length === 0 ||
+      filters.assignees.includes(issue.assignee);
+    
+    return matchesStatus && matchesSearch && matchesAssignees;
   });
+
+  // Get unique assignees for the dropdown
+  const uniqueAssignees = Array.from(new Set(issues.map(issue => issue.assignee))).sort();
 
   const handleFilterChange = (newFilters: Partial<IssueFilters>) => {
     onFilterChange({ ...filters, ...newFilters });
+  };
+
+  const toggleAssignee = (assignee: string) => {
+    const newAssignees = filters.assignees.includes(assignee)
+      ? filters.assignees.filter(a => a !== assignee)
+      : [...filters.assignees, assignee];
+    handleFilterChange({ assignees: newAssignees });
+  };
+
+  const clearAssigneeFilter = () => {
+    handleFilterChange({ assignees: [] });
+    setIsAssigneeDropdownOpen(false);
   };
 
   // Type-specific labels
@@ -81,12 +122,75 @@ export function IssueBoard({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
-              placeholder={searchPlaceholder}
+              placeholder="Search by ID, title, assignee, or description..."
               value={filters.search}
               onChange={(e) => handleFilterChange({ search: e.target.value })}
-              className="input-field pl-10 pr-4 py-2.5 w-64"
+              className="input-field pl-10 pr-4 py-2.5 w-80"
             />
           </div>
+          
+          {/* Multi-select Assignee Filter */}
+          <div className="relative" ref={assigneeDropdownRef}>
+            <button
+              onClick={() => setIsAssigneeDropdownOpen(!isAssigneeDropdownOpen)}
+              className={`flex items-center space-x-2 px-4 py-2.5 border rounded-lg transition-colors ${
+                filters.assignees.length > 0
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+              }`}
+            >
+              <User className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {filters.assignees.length === 0
+                  ? 'All Assignees'
+                  : `${filters.assignees.length} Selected`}
+              </span>
+              {filters.assignees.length > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearAssigneeFilter();
+                  }}
+                  className="ml-1 hover:bg-primary-200 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </button>
+
+            {isAssigneeDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-80 overflow-y-auto">
+                <div className="p-2 border-b border-gray-100 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">Select Assignees</span>
+                  {filters.assignees.length > 0 && (
+                    <button
+                      onClick={clearAssigneeFilter}
+                      className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+                <div className="py-1">
+                  {uniqueAssignees.map((assignee) => (
+                    <label
+                      key={assignee}
+                      className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={filters.assignees.includes(assignee)}
+                        onChange={() => toggleAssignee(assignee)}
+                        className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      />
+                      <span className="ml-3 text-sm text-gray-700">{assignee}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <select
